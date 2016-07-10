@@ -1,0 +1,47 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>com.ds</groupId>
+		<artifactId>web-rs</artifactId>
+		<version>${build.number}</version>
+	</parent>
+	<artifactId>web-rs-core</artifactId>
+	<packaging>war</packaging>
+
+	<build>
+		<finalName>web-rs-${build.number}</finalName>
+		<filters>
+			<filter>src/main/resources/app-variables.properties</filter>
+		</filters>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-war-plugin</artifactId>
+				<version>2.3</version>
+				<configuration>
+					<warSourceDirectory>webapp</warSourceDirectory>
+					<failOnMissingWebXml>true</failOnMissingWebXml>
+					<webXml>${project.basedir}/src/main/webapp/WEB-INF/web.xml</webXml>
+					<warSourceDirectory>${project.basedir}/src/main/webapp</warSourceDirectory>
+					<manifest>
+						<addDefaultImplementationEntries>true</addDefaultImplementationEntries>
+					</manifest>
+					<archive>
+						<manifestEntries>
+							<Implementation-Version>${build.number}</Implementation-Version>
+						</manifestEntries>
+					</archive>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
+	
+	<dependencies>
+		<dependency>
+			<groupId>com.ds</groupId>
+			<artifactId>web-rs-model</artifactId>
+			<version>${build.number}</version>
+		</dependency>
+	</dependencies>
+</project>

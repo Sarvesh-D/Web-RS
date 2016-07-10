@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:sws="http://www.springframework.org/schema/web-services"
+	xmlns:aop="http://www.springframework.org/schema/aop" xmlns:mvc="http://www.springframework.org/schema/mvc"
+	xmlns:util="http://www.springframework.org/schema/util" xmlns:p="http://www.springframework.org/schema/p"
+	xmlns:cache="http://www.springframework.org/schema/cache"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans
+							http://www.springframework.org/schema/beans/spring-beans.xsd
+							http://www.springframework.org/schema/web-services
+							http://www.springframework.org/schema/web-services/web-services.xsd
+							http://www.springframework.org/schema/context
+							http://www.springframework.org/schema/context/spring-context.xsd
+							http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop.xsd
+							http://www.springframework.org/schema/mvc 
+        					http://www.springframework.org/schema/mvc/spring-mvc.xsd
+							http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd
+							http://www.springframework.org/schema/cache http://www.springframework.org/schema/cache/spring-cache.xsd">
+
+	<!-- Root Context: defines shared resources visible to all other web components -->
+	<!-- <import resource="persistence.xml" /> -->
+	
+	<util:properties id="errorDetails" location="classpath*:**/web-rs-error.properties"/>
+	
+	<context:property-placeholder location="classpath*:**/web-rs.properties" />
+	
+	<context:component-scan base-package="com.ds.web.rs.common, com.ds.web.rs.service" />
+	
+	<aop:aspectj-autoproxy />
+	
+	<!-- Cache Configuration -->
+	<cache:annotation-driven key-generator="ehCacheKeyGenerator" />
+	<bean id="cacheManager" class="org.springframework.cache.ehcache.EhCacheCacheManager"
+		p:cache-manager-ref="ehcache" />
+	<!-- Ehcache library setup -->
+	<bean id="ehcache"
+		class="org.springframework.cache.ehcache.EhCacheManagerFactoryBean"
+		p:config-location="classpath:ehcache.xml" p:cacheManagerName="springCache" />
+
+</beans>

@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:aop="http://www.springframework.org/schema/aop"
+	xmlns:context="http://www.springframework.org/schema/context" xmlns:tx="http://www.springframework.org/schema/tx"
+	xsi:schemaLocation="http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop.xsd
+		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd
+							http://www.springframework.org/schema/context
+							http://www.springframework.org/schema/context/spring-context.xsd">
+
+	<context:component-scan base-package="com.ds.web.rs.persistence" />
+
+	<bean id="dataSource" class="org.springframework.jndi.JndiObjectFactoryBean">
+		<property name="jndiName" value="java:jboss/datasources/KYCCUDS" />
+		<property name="lookupOnStartup" value="false" />
+		<property name="resourceRef" value="true" />
+		<property name="cache" value="true" />
+		<property name="proxyInterface" value="javax.sql.DataSource" />
+	</bean>
+
+	<bean id="sessionFactory"
+		class="org.springframework.orm.hibernate4.LocalSessionFactoryBean">
+		<property name="dataSource" ref="dataSource" />
+		<property name="packagesToScan">
+			<list>
+				<value>com.ds.web.rs.persistence.bo</value>
+			</list>
+		</property>
+
+		<property name="hibernateProperties">
+			<props>
+				<prop key="hibernate.dialect">org.hibernate.dialect.MySQLDialect</prop>
+				<prop key="hibernate.show_sql">true</prop>
+				<prop key="hibernate.format_sql">true</prop>
+				<prop key="use_sql_comments">true</prop>
+				<prop key="default_batch_fetch_size">4</prop>
+				<prop key="c3p0.acquire_increment">1</prop>
+				<prop key="c3p0.idle_test_period">100</prop> <!-- seconds -->
+				<prop key="c3p0.max_size">100</prop>
+				<prop key="c3p0.min_size">10</prop>
+				<prop key="c3p0.timeout">100</prop> <!-- seconds -->
+				<prop key="hibernate.jdbc.batch_size">30</prop>
+
+				<!-- Envers Properties -->
+				<prop key="hibernate.listeners.envers.autoRegister">false</prop> <!-- set false to disable envers auditing -->
+				<prop key="org.hibernate.envers.default_schema"></prop>
+				<prop key="org.hibernate.envers.track_entities_changed_in_revision">true</prop>
+				<prop key="org.hibernate.envers.global_with_modified_flag">true</prop>
+				<prop key="org.hibernate.envers.modified_flag_suffix">_M</prop>
+			</props>
+		</property>
+
+		<!-- Audit Interceptor -->
+		<!-- <property name="entityInterceptor" ref="auditInterceptor" /> --> <!-- comment this to disable custom audit -->
+	</bean>
+
+	<bean id="hibernateTemplate" class="org.springframework.orm.hibernate4.HibernateTemplate">
+		<property name="sessionFactory" ref="sessionFactory" />
+	</bean>
+
+	<!-- Transaction Settings -->
+	<tx:annotation-driven transaction-manager="transactionManager" />
+
+	<bean id="transactionManager"
+		class="org.springframework.orm.hibernate4.HibernateTransactionManager">
+		<property name="sessionFactory" ref="sessionFactory" />
+	</bean>
+
+	<!-- For Fine grain transaction settings -->
+	<!-- <tx:advice id="txAdvice" transaction-manager="transactionManager"> 
+		<tx:attributes> <tx:method name="*" rollback-for="IllegalArgumentException"/> 
+		</tx:attributes> </tx:advice> -->
+
+</beans>
