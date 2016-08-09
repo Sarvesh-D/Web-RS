@@ -3,6 +3,7 @@ package com.ds.web.rs.common.aspects;
 import java.util.Arrays;
 import java.util.UUID;
 
+import org.apache.commons.lang.StringUtils;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.AfterReturning;
@@ -36,7 +37,8 @@ public class LoggingAspect {
 	private void allMethods() {}
 
 	@Around("allMethodsExceptRequests()")
-	public Object logMethodsExceptRequests(ProceedingJoinPoint pjp) throws Throwable {
+	public Object logMethodsExceptRequestsEntry(ProceedingJoinPoint pjp) throws Throwable {
+		putUuid();
 		Object retval = null;
 		logger.trace("Entering method : {}", pjp.getSignature());
 		retval = pjp.proceed();
@@ -44,7 +46,7 @@ public class LoggingAspect {
 	}
 	
 	@Around("allRequests(requestMapping)")
-	public Object logRequests(ProceedingJoinPoint pjp, RequestMapping requestMapping) throws Throwable {
+	public Object logRequestsEntry(ProceedingJoinPoint pjp, RequestMapping requestMapping) throws Throwable {
 		putUuid();
 		Object retval = null;
 		logger.trace("Entering method : {}", pjp.getSignature());
@@ -80,14 +82,11 @@ public class LoggingAspect {
 	}
 	
 	private void putUuid() {
-		clearUuid();
-		String uuid = UUID.randomUUID().toString().replaceAll("-", "")
-				.toUpperCase();
-		MDC.put("uuid", uuid);
-	}
-	
-	private void clearUuid() {
-		MDC.remove("uuid");
+		if(StringUtils.isEmpty(MDC.get("uuid"))) {
+			String uuid = UUID.randomUUID().toString().replaceAll("-", "")
+					.toUpperCase();
+			MDC.put("uuid", uuid);
+		}
 	}
 
 }
