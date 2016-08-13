@@ -3,6 +3,8 @@ package com.ds.web.rs.common.aspects;
 import java.util.Arrays;
 import java.util.UUID;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.apache.commons.lang.StringUtils;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.ProceedingJoinPoint;
@@ -26,6 +28,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 public class LoggingAspect {
 
 	private static final Logger logger = LoggerFactory.getLogger(LoggingAspect.class); 
+	
+	@Autowired
+	private HttpServletRequest request;
 
 	@Pointcut("execution(* com.ds.web.rs..*(..)) && !@annotation(org.springframework.web.bind.annotation.RequestMapping)")
 	private void allMethodsExceptRequests() {}
@@ -78,6 +83,9 @@ public class LoggingAspect {
 		requestInfo.append(Arrays.toString(requestMapping.params()));
 		requestInfo.append("\nRequest path(s) = ");
 		requestInfo.append(Arrays.toString(requestMapping.path()));
+		requestInfo.append("\nUser Principal = "+request.getUserPrincipal());
+		requestInfo.append("\nRequest IP = "+request.getRemoteAddr());
+		requestInfo.append("\nServer IP = "+request.getServerName());
 		return requestInfo;
 	}
 	
